@@ -2,6 +2,8 @@ package org.example.service;
 
 import org.example.Util.AuthValidator;
 import org.example.entities.UserInfo;
+import org.example.eventProducer.UserInfoEvent;
+import org.example.eventProducer.UserInfoProducer;
 import org.example.model.UserInfoDTO;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserInfoProducer userInfoProducer;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -70,7 +75,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 new UserInfo(userId, email, userInfoDTO.getPassword(), new HashSet<>())
         );
 
+        // pushEventToQueue
+        userInfoProducer.sendEventToKafka(userInfoEventToPublish(userInfoDTO,userId));
         return true;
+    }
+
+    private UserInfoEvent userInfoEventToPublish(UserInfoDTO userInfoDto, String userId)
+    {
+        return UserInfoEvent.builder()
+                .userId(userId)
+                .firstName(userInfoDto.getFirstName())
+                .lastName(userInfoDto.getLastName())
+                .email(userInfoDto.getEmail())
+                .phoneNumber(userInfoDto.getPhoneNumber()).build();
     }
 
 }
