@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +63,7 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/auth/v1/ping")
     public ResponseEntity<String> ping()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,6 +74,12 @@ public class AuthController {
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<Boolean> checkHealth()
+    {
+        return new ResponseEntity<>(true,HttpStatus.OK);
     }
 
 
