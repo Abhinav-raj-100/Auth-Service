@@ -42,7 +42,8 @@ public class SecurityConfig {
                         auth->auth
                                 .requestMatchers("/auth/v1/login",
                                         "/auth/v1/refreshToken",
-                                        "/auth/v1/signup").permitAll()
+                                        "/auth/v1/signup",
+                                        "/health").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session->
